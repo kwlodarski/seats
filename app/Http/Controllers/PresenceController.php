@@ -11,10 +11,28 @@ class PresenceController extends Controller
     public function addPresence(Request $request) 
     {
         $presence = new Presence();
-        $presence->create([
+        $presence->updateOrCreate([
             'employee_id' => $request->employeeId,
             'date' => Carbon::createFromDate($request->year, $request->month, $request->day)
-        ]);
+        ],[]);
+        $currentMonthObject = $this->buildMonthObject($request->month, $request->year);
+        return response()->json( compact('currentMonthObject'));
+    }
+
+    public function addPresences(Request $request) 
+    {
+        $presence = new Presence();
+        foreach($request->days as $day) {
+            $date = Carbon::createFromDate($request->year, $request->month, $day);
+            $presence->updateOrCreate([
+                'employee_id' => $request->employeeId,
+                'date' => "$request->year-$request->month-$day"
+            ],
+            [
+                'employee_id' => $request->employeeId,
+                'date' => $date
+            ]);
+        }
         $currentMonthObject = $this->buildMonthObject($request->month, $request->year);
         return response()->json( compact('currentMonthObject'));
     }
@@ -23,6 +41,16 @@ class PresenceController extends Controller
     {
         $presence = new Presence();
         $presence->where('employee_id', $request->employeeId)->whereDate('date', '=', Carbon::createFromDate($request->year, $request->month, $request->day))->delete();
+        $currentMonthObject = $this->buildMonthObject($request->month, $request->year);
+        return response()->json( compact('currentMonthObject'));
+    }
+
+    public function removePresences(Request $request)
+    {
+        $presence = new Presence();
+        foreach($request->days as $day) {
+            $presence->where('employee_id', $request->employeeId)->whereDate('date', '=', Carbon::createFromDate($request->year, $request->month, $day))->delete();
+        }
         $currentMonthObject = $this->buildMonthObject($request->month, $request->year);
         return response()->json( compact('currentMonthObject'));
     }

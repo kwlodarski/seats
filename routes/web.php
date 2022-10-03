@@ -23,7 +23,9 @@ Route::get('/', function () {
 Route::get('/employees', 'EmployeeController@getAllEmployees');
 
 Route::post('/addPresence', 'PresenceController@addPresence');
+Route::post('/addPresences', 'PresenceController@addPresences');
 Route::post('/removePresence', 'PresenceController@removePresence');
+Route::post('/removePresences', 'PresenceController@removePresences');
 Route::post('/getPresences', 'PresenceController@getPresences');
 
 

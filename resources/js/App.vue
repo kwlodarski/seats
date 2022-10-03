@@ -20,7 +20,13 @@
         <table class="w-full mb-6">
             <tr>
             <td></td>
-            <td class="px-2 py-1 text-center" v-for="(employee, index) in employees" :key="index">{{ employee.name }}</td>
+            <td class="px-2 py-1 text-center" v-for="(employee, index) in employees" :key="index">
+                <input
+                    type="checkbox"
+                    :class="[`frequency-${day}`]"
+                    @change="changeAllFrequency($event, index, employee.id)"
+                />
+                {{ employee.name }}</td>
             <td></td>
             </tr>
             <tr
@@ -153,6 +159,13 @@ export default {
                 this.removePresence(day, employeeId);
             }
         },
+        changeAllFrequency(event, index, employeeId) {
+            if (event.target.checked) {
+                this.addPresences(employeeId);
+            } else {
+                this.removePresences(employeeId);
+            }
+        },
         addPresence(day, employeeId) {
             const allCheckboxes = document.querySelectorAll('input');
             this.loading = true;
@@ -183,6 +196,43 @@ export default {
                 console.log(response);
             });
         },
+        addPresences(employeeId) {
+            const allCheckboxes = document.querySelectorAll('input');
+            this.loading = true;
+            allCheckboxes.forEach(element => {
+                element.disabled = true;
+            });
+            const self = this;
+            const onlyWorkDays = this.currentMonthObject.filter(function (day) {
+                return day.freeDay === false;
+            });
+            let days = [];
+            onlyWorkDays.forEach(day => {
+                days = [...days, day.day];
+            });
+            const data = {
+                employeeId: employeeId,
+                days: days,
+                month: this.currentMonth,
+                year: this.currentYear
+            };
+            axios.post(
+                '/addPresences',
+                data
+            ).then(function(response){
+                allCheckboxes.forEach(element => {
+                    element.disabled = false;
+                });
+                self.currentMonthObject = response.data.currentMonthObject;
+                self.currentMonthObject.map(function(day){
+                    day.freeDay = self.isFreeDay(day.day);
+                    return day;
+                });
+                self.loading = false;
+            }).catch(function (response) {
+                console.log(response);
+            });
+        },
         removePresence(day, employeeId) {
             const allCheckboxes = document.querySelectorAll('input');
             this.loading = true;
@@ -192,12 +242,49 @@ export default {
             const self = this;
             const data = {
                 employeeId: employeeId,
-                day: day,
+                days: days,
                 month: this.currentMonth,
                 year: this.currentYear
             };
             axios.post(
                 '/removePresence',
+                data
+            ).then(function(response){
+                allCheckboxes.forEach(element => {
+                    element.disabled = false;
+                });
+                self.currentMonthObject = response.data.currentMonthObject;
+                self.currentMonthObject.map(function(day){
+                    day.freeDay = self.isFreeDay(day.day);
+                    return day;
+                });
+                self.loading = false;
+            }).catch(function (response) {
+                console.log(response);
+            });
+        },
+        removePresences(employeeId) {
+            const allCheckboxes = document.querySelectorAll('input');
+            this.loading = true;
+            allCheckboxes.forEach(element => {
+                element.disabled = true;
+            });
+            const self = this;
+            const onlyWorkDays = this.currentMonthObject.filter(function (day) {
+                return day.freeDay === false;
+            });
+            let days = [];
+            onlyWorkDays.forEach(day => {
+                days = [...days, day.day];
+            });
+            const data = {
+                employeeId: employeeId,
+                days: days,
+                month: this.currentMonth,
+                year: this.currentYear
+            };
+            axios.post(
+                '/removePresences',
                 data
             ).then(function(response){
                 allCheckboxes.forEach(element => {
