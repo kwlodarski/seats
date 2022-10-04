@@ -242,7 +242,7 @@ export default {
             const self = this;
             const data = {
                 employeeId: employeeId,
-                days: days,
+                day: day,
                 month: this.currentMonth,
                 year: this.currentYear
             };
