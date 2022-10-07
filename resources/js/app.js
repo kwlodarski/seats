@@ -1,5 +1,7 @@
 
 import { createApp } from "vue";
-import App from "./App.vue";
+import Calendar from "./calendar.vue";
+import Settings from "./settings.vue";
 import 'tw-elements';
-createApp(App).mount("#calendar");
+createApp(Calendar).mount("#calendar");
+createApp(Settings).mount("#settings");

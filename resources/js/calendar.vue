@@ -70,7 +70,7 @@
 import axios from 'axios';
 
 export default {
-    name: "App",
+    name: "Calendar",
     data() {
         const today = new Date();
         const currentMonth = today.getMonth() + 1;
