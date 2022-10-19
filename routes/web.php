@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Route;
 */
 Auth::routes();
 
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+Route::get('/settings', [App\Http\Controllers\SettingsController::class, 'index'])->name('settings');
 
 Route::get('/', function () {
     return view('welcome');
@@ -27,5 +27,9 @@ Route::post('/addPresences', 'PresenceController@addPresences');
 Route::post('/removePresence', 'PresenceController@removePresence');
 Route::post('/removePresences', 'PresenceController@removePresences');
 Route::post('/getPresences', 'PresenceController@getPresences');
+
+Route::post('/addEmployee', 'EmployeeController@addEmployee')->middleware('auth');
+Route::post('/deleteEmployee', 'EmployeeController@deleteEmployee')->middleware('auth');
+Route::post('/editEmployee', 'EmployeeController@editEmployee')->middleware('auth');
 
 

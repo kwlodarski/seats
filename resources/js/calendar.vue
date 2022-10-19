@@ -1,5 +1,5 @@
 <template>
-    <div class="relative">
+    <div class="relative pb-8">
         <div class="flex justify-between my-6">
             <button 
                 @click="prevMonth" 
@@ -17,7 +17,7 @@
                 class="inline-block px-6 py-2.5 bg-blue-400 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-blue-500 hover:shadow-lg focus:bg-blue-400 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-600 active:shadow-lg transition duration-150 ease-in-out"
             >następny miesiąc</button>
         </div>
-        <table class="w-full mb-6">
+        <table class="w-full">
             <tr>
             <td></td>
             <td class="px-2 py-1 text-center" v-for="(employee, index) in employees" :key="index">
@@ -34,9 +34,9 @@
                 :key="index"
                 class="even:bg-gray-50 odd:bg-white border border-gray-200"
             >
-            <td class="px-2 py-1 text-center" :class="{ 'bg-red-500 text-white': freeDay, 'bg-green-500 text-white': isToday(day) }">{{ weekday }} {{ day }}.{{ zeroPad(currentMonth, 10) }}.{{ currentYear }}</td>
+            <td class="px-2 py-2 text-center" :class="{ 'bg-red-300 text-black': freeDay, 'bg-green-300 text-black': isToday(day) }">{{ weekday }} {{ day }}.{{ zeroPad(currentMonth, 10) }}.{{ currentYear }}</td>
             <template v-if="!freeDay">
-                <td v-for="(employee, employeeIndex) in employees" :key="employeeIndex" class="text-center px-2 py-1" :class="{ 'bg-red-500 text-white': freeDay, 'bg-green-500 text-white': isToday(day) }">
+                <td v-for="(employee, employeeIndex) in employees" :key="employeeIndex" class="text-center px-2 py-1" :class="{ 'bg-red-300 text-black': freeDay, 'bg-green-300 text-black': isToday(day) }">
                     <input
                     v-if="!freeDay"
                     type="checkbox"
@@ -47,18 +47,18 @@
                 </td>
             </template>
             <template v-else>
-                <td class="text-center px-2 py-1" :class="{ 'bg-red-500 text-white': freeDay, 'bg-green-500 text-white': isToday(day) }" :colspan="employees.length">
+                <td class="text-center px-2 py-1" :class="{ 'bg-red-300 text-black': freeDay, 'bg-green-300 text-white': isToday(day) }" :colspan="employees.length">
                     {{ holiday }}
                 </td>
             </template>
-            <td class="px-2 py-1 text-center" :class="{'bg-green-500 text-white': currentMonthObject[index].frequency.length < 7 && !freeDay || freeDay && isToday(day), 'bg-red-500 text-white': currentMonthObject[index].frequency.length > 7, 'bg-yellow-500': currentMonthObject[index].frequency.length === 7, 'bg-red-500': freeDay && !isToday(day)}">
+            <td class="px-2 py-1 text-center" :class="{'bg-green-300 text-black': currentMonthObject[index].frequency.length < 7 && !freeDay || freeDay && isToday(day), 'bg-red-300 text-black': currentMonthObject[index].frequency.length > 7, 'bg-yellow-500': currentMonthObject[index].frequency.length === 7, 'bg-red-300': freeDay && !isToday(day)}">
                 <span v-if="!freeDay">{{
                 currentMonthObject[index].frequency.length
                 }}</span>
             </td>
             </tr>
         </table>
-        <div v-if="loading" class="w-full h-full absolute top-0 left-0 bg-gray-200/70 grid content-center justify-center">
+        <div v-if="loading" class="w-full h-full absolute top-0 left-0 bg-gray-100/70 grid content-center justify-center">
             <div class="spinner-grow inline-block w-12 h-12 bg-current rounded-full opacity-0" role="status">
                 <span class="visually-hidden">Loading...</span>
             </div>
@@ -70,7 +70,7 @@
 import axios from 'axios';
 
 export default {
-    name: "App",
+    name: "Calendar",
     data() {
         const today = new Date();
         const currentMonth = today.getMonth() + 1;
