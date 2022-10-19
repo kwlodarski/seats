@@ -34,20 +34,20 @@
                 </div>
                 <nav class="space-x-4 text-gray-300 text-sm sm:text-base">
                     @guest
-                        <a class="no-underline hover:underline" href="{{ url('/') }}">{{ __('Calendar') }}</a>
-                        <a class="no-underline hover:underline" href="{{ route('login') }}">{{ __('Login') }}</a>
+                        <a class="no-underline hover:underline" href="{{ url('/') }}">{{ __('Kalendarz') }}</a>
+                        <a class="no-underline hover:underline" href="{{ route('login') }}">{{ __('Logowanie') }}</a>
                         @if (Route::has('register'))
-                            <a class="no-underline hover:underline" href="{{ route('register') }}">{{ __('Register') }}</a>
+                            <a class="no-underline hover:underline" href="{{ route('register') }}">{{ __('Rejestracja') }}</a>
                         @endif
                     @else
                         {{-- <span>{{ Auth::user()->name }}</span> --}}
-                        <a class="no-underline hover:underline" href="{{ url('/') }}">{{ __('Calendar') }}</a>
-                        <a class="no-underline hover:underline" href="{{ route('settings') }}">{{ __('Settings') }}</a>
+                        <a class="no-underline hover:underline" href="{{ url('/') }}">{{ __('Kalendarz') }}</a>
+                        <a class="no-underline hover:underline" href="{{ route('settings') }}">{{ __('Ustawienia') }}</a>
 
                         <a href="{{ route('logout') }}"
                            class="no-underline hover:underline"
                            onclick="event.preventDefault();
-                                document.getElementById('logout-form').submit();">{{ __('Logout') }}</a>
+                                document.getElementById('logout-form').submit();">{{ __('Wyloguj') }}</a>
                         <form id="logout-form" action="{{ route('logout') }}" method="POST" class="hidden">
                             {{ csrf_field() }}
                         </form>

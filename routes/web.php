@@ -28,4 +28,8 @@ Route::post('/removePresence', 'PresenceController@removePresence');
 Route::post('/removePresences', 'PresenceController@removePresences');
 Route::post('/getPresences', 'PresenceController@getPresences');
 
+Route::post('/addEmployee', 'EmployeeController@addEmployee')->middleware('auth');
+Route::post('/deleteEmployee', 'EmployeeController@deleteEmployee')->middleware('auth');
+Route::post('/editEmployee', 'EmployeeController@editEmployee')->middleware('auth');
+
 
