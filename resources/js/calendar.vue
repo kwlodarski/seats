@@ -36,7 +36,7 @@
                                         </div>
                                         <div class="flex-2 text-center">
                                             <p class="font-bold mb-0">{{ employees[currentEmployeeIndex].name }}</p>
-                                            <div class="form-check flex justify-center items-center">
+                                            <div class="form-check flex justify-center items-center" v-show="employees[currentEmployeeIndex].id === loggedUser">
                                                 <input class="form-check-input appearance-none h-4 w-4 border border-gray-300 rounded-sm bg-white checked:bg-k4green checked:border-k4green focus:outline-none transition duration-200 align-top bg-no-repeat bg-center bg-contain float-left mr-2 cursor-pointer" type="checkbox" @change="changeAllFrequency($event, index, employees[currentEmployeeIndex].id)" :id="[`employee-${currentEmployeeIndex}`]" :checked="isFullFrequency(employees[currentEmployeeIndex].id) ? true : false">
                                                 <label class="form-check-label inline-block text-sm font-light" :for="[`employee-${currentEmployeeIndex}`]">
                                                     wszystkie dni
@@ -55,7 +55,7 @@
                                 <td></td>
                                 <td class="px-2 py-1 text-center cell-for-slider" v-for="(employee, index) in employees" :key="index">
                                     <p class="font-bold mb-0">{{ employees[index].name }}</p>
-                                    <div class="form-check flex justify-center items-center">
+                                    <div class="form-check flex justify-center items-center" v-show="employee.id === loggedUser">
                                         <input class="form-check-input appearance-none h-4 w-4 border border-gray-300 rounded-sm bg-white checked:bg-k4green checked:border-k4green focus:outline-none transition duration-200 align-top bg-no-repeat bg-center bg-contain float-left mr-2 cursor-pointer" type="checkbox" @change="changeAllFrequency($event, index, employee.id)" :id="[`employee-${index}`]" :checked="isFullFrequency(employees[index].id) ? true : false">
                                         <label class="form-check-label inline-block text-sm font-light" :for="[`employee-${index}`]">
                                             wszystkie dni
@@ -157,6 +157,7 @@ export default {
         return {
             today: today,
             employees: {},
+            loggedUser: null,
             currentMonth: currentMonth,
             currentYear: currentYear,
             currentMonthObject: currentMonthObject,
@@ -270,7 +271,7 @@ export default {
             });
             const self = this;
             const data = {
-                employeeId: employeeId,
+                userId: employeeId,
                 day: day,
                 month: this.currentMonth,
                 year: this.currentYear
@@ -307,7 +308,7 @@ export default {
                 days = [...days, day.day];
             });
             const data = {
-                employeeId: employeeId,
+                userId: employeeId,
                 days: days,
                 month: this.currentMonth,
                 year: this.currentYear
@@ -337,7 +338,7 @@ export default {
             });
             const self = this;
             const data = {
-                employeeId: employeeId,
+                userId: employeeId,
                 day: day,
                 month: this.currentMonth,
                 year: this.currentYear
@@ -374,7 +375,7 @@ export default {
                 days = [...days, day.day];
             });
             const data = {
-                employeeId: employeeId,
+                userId: employeeId,
                 days: days,
                 month: this.currentMonth,
                 year: this.currentYear
@@ -407,6 +408,7 @@ export default {
                 '/getPresences',
                 data
             ).then(function(response){
+                self.loggedUser = response.data.loggedUser;
                 self.currentMonthObject = response.data.currentMonthObject;
                 self.currentMonthObject.map(function(day){
                     day.freeDay = self.isFreeDay(day.day);
@@ -419,12 +421,12 @@ export default {
         },
         getEmployees() {
             const self = this;
-            fetch('/employees')
+            fetch('/activeUsers')
                 .then(function(response) {
                     return response.json()
                 })
                 .then(function(data) {
-                    self.employees = data.employees;
+                    self.employees = data.users;
                     if(self.employees.length > 0 && self.currentEmployeeIndex === null) {
                         self.currentEmployeeIndex = 0;
                     }

@@ -2,6 +2,7 @@
 import { createApp } from "vue";
 import Calendar from "./calendar.vue";
 import Settings from "./settings.vue";
+import Vacations from "./vacations.vue";
 import { autoAnimatePlugin } from '@formkit/auto-animate/vue';
 import { VueScreenSizeMixin } from 'vue-screen-size';
 import Vue3TouchEvents from "vue3-touch-events";
@@ -27,4 +28,7 @@ if (document.querySelector("#calendar")) {
 }
 if (document.querySelector("#settings")) {
     createApp(Settings).use(autoAnimatePlugin).mount("#settings");
+}
+if (document.querySelector("#vacations")) {
+    createApp(Vacations).use(autoAnimatePlugin).mount("#vacations");
 }
