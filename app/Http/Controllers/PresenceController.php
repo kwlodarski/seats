@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Models\Presence;
 use Carbon\Carbon;
+use App\Models\Presence;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class PresenceController extends Controller
 {
@@ -12,7 +13,7 @@ class PresenceController extends Controller
     {
         $presence = new Presence();
         $presence->updateOrCreate([
-            'employee_id' => $request->employeeId,
+            'user_id' => $request->userId,
             'date' => Carbon::createFromDate($request->year, $request->month, $request->day)
         ],[]);
         $currentMonthObject = $this->buildMonthObject($request->month, $request->year);
@@ -25,11 +26,11 @@ class PresenceController extends Controller
         foreach($request->days as $day) {
             $date = Carbon::createFromDate($request->year, $request->month, $day);
             $presence->updateOrCreate([
-                'employee_id' => $request->employeeId,
+                'user_id' => $request->userId,
                 'date' => "$request->year-$request->month-$day"
             ],
             [
-                'employee_id' => $request->employeeId,
+                'user_id' => $request->userId,
                 'date' => $date
             ]);
         }
@@ -40,7 +41,7 @@ class PresenceController extends Controller
     public function removePresence(Request $request)
     {
         $presence = new Presence();
-        $presence->where('employee_id', $request->employeeId)->whereDate('date', '=', Carbon::createFromDate($request->year, $request->month, $request->day))->delete();
+        $presence->where('user_id', $request->userId)->whereDate('date', '=', Carbon::createFromDate($request->year, $request->month, $request->day))->delete();
         $currentMonthObject = $this->buildMonthObject($request->month, $request->year);
         return response()->json( compact('currentMonthObject'));
     }
@@ -49,7 +50,7 @@ class PresenceController extends Controller
     {
         $presence = new Presence();
         foreach($request->days as $day) {
-            $presence->where('employee_id', $request->employeeId)->whereDate('date', '=', Carbon::createFromDate($request->year, $request->month, $day))->delete();
+            $presence->where('user_id', $request->userId)->whereDate('date', '=', Carbon::createFromDate($request->year, $request->month, $day))->delete();
         }
         $currentMonthObject = $this->buildMonthObject($request->month, $request->year);
         return response()->json( compact('currentMonthObject'));
@@ -58,7 +59,11 @@ class PresenceController extends Controller
     public function getPresences(Request $request)
     {
         $currentMonthObject = $this->buildMonthObject($request->month, $request->year);
-        return response()->json( compact('currentMonthObject'));
+        $loggedUser = null;
+        if (Auth::user()) {
+            $loggedUser = Auth::user()->id;
+        }
+        return response()->json( compact('currentMonthObject', 'loggedUser'));
     }
 
     public function buildMonthObject($month, $year) 
@@ -67,10 +72,10 @@ class PresenceController extends Controller
         for ($i=0; $i < cal_days_in_month(CAL_GREGORIAN, $month, $year); $i++) { 
             $day = $i + 1;
             $presence = new Presence();
-            $getPresencesForCurrentDay = $presence->whereDate('date', '=', Carbon::createFromDate($year, $month, $day))->get('employee_id')->toArray();
+            $getPresencesForCurrentDay = $presence->whereDate('date', '=', Carbon::createFromDate($year, $month, $day))->get('user_id')->toArray();
             $frequency = [];
-            foreach($getPresencesForCurrentDay as $employee) {
-                $frequency[] = $employee['employee_id'];
+            foreach($getPresencesForCurrentDay as $user) {
+                $frequency[] = $user['user_id'];
             }
             $currentMonthObject[] = [
                 'index' => $i,

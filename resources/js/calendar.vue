@@ -36,7 +36,7 @@
                                         </div>
                                         <div class="flex-2 text-center">
                                             <p class="font-bold mb-0">{{ employees[currentEmployeeIndex].name }}</p>
-                                            <div class="form-check flex justify-center items-center">
+                                            <div class="form-check flex justify-center items-center" v-show="employees[currentEmployeeIndex].id === loggedUser">
                                                 <input class="form-check-input appearance-none h-4 w-4 border border-gray-300 rounded-sm bg-white checked:bg-k4green checked:border-k4green focus:outline-none transition duration-200 align-top bg-no-repeat bg-center bg-contain float-left mr-2 cursor-pointer" type="checkbox" @change="changeAllFrequency($event, index, employees[currentEmployeeIndex].id)" :id="[`employee-${currentEmployeeIndex}`]" :checked="isFullFrequency(employees[currentEmployeeIndex].id) ? true : false">
                                                 <label class="form-check-label inline-block text-sm font-light" :for="[`employee-${currentEmployeeIndex}`]">
                                                     wszystkie dni
@@ -55,7 +55,7 @@
                                 <td></td>
                                 <td class="px-2 py-1 text-center cell-for-slider" v-for="(employee, index) in employees" :key="index">
                                     <p class="font-bold mb-0">{{ employees[index].name }}</p>
-                                    <div class="form-check flex justify-center items-center">
+                                    <div class="form-check flex justify-center items-center" v-show="employee.id === loggedUser">
                                         <input class="form-check-input appearance-none h-4 w-4 border border-gray-300 rounded-sm bg-white checked:bg-k4green checked:border-k4green focus:outline-none transition duration-200 align-top bg-no-repeat bg-center bg-contain float-left mr-2 cursor-pointer" type="checkbox" @change="changeAllFrequency($event, index, employee.id)" :id="[`employee-${index}`]" :checked="isFullFrequency(employees[index].id) ? true : false">
                                         <label class="form-check-label inline-block text-sm font-light" :for="[`employee-${index}`]">
                                             wszystkie dni
@@ -94,14 +94,21 @@
                                 <td class="px-2 py-2 text-center" :class="{ 'bg-k4gray text-white': freeDay, 'bg-k4green text-white': isToday(day) }">{{ weekday }} {{ day }}.{{ zeroPad(currentMonth, 10) }}.{{ currentYear }}</td>
                                 <template v-if="!freeDay">
                                     <td v-for="(employee, employeeIndex) in employees" :key="employeeIndex" class="text-center px-2 py-1" :class="{ 'bg-k4gray text-white': freeDay, 'bg-k4green text-white': isToday(day) }">
-                                        <input
-                                            class="form-check-input appearance-none h-4 w-4 border border-gray-300 rounded-sm bg-white focus:outline-none transition duration-200 align-top bg-no-repeat bg-center bg-contain mr-2 cursor-pointer"
-                                            v-if="!freeDay"
-                                            type="checkbox"
-                                            :class="[`frequency-${day}`],{'checked:bg-k4green checked:border-k4green': !isToday(day), 'checked:bg-k4pink checked:border-k4pink': isToday(day)}"
-                                            @change="changeFrequency($event, index, day, employee.id)"
-                                            :checked="currentMonthObject[index].frequency.includes(employee.id) ? true : false"
-                                        />
+                                        <template v-if="vacations[employee.id]?.includes(day) > 0">
+                                            <span>urlop</span>
+                                        </template>
+                                        <template v-else>
+                                            <input
+                                                class="form-check-input appearance-none h-4 w-4 border border-gray-300 rounded-sm bg-white focus:outline-none transition duration-200 align-top bg-no-repeat bg-center bg-contain mr-2 cursor-pointer"
+                                                v-if="!freeDay"
+                                                type="checkbox"
+                                                :class="[`frequency-${day}`],{'checked:bg-k4green checked:border-k4green': !isToday(day), 'checked:bg-k4pink checked:border-k4pink': isToday(day)}"
+                                                @change="changeFrequency($event, index, day, employee.id)"
+                                                :checked="currentMonthObject[index].frequency.includes(employee.id) ? true : false"
+                                                v-show="employee.id === loggedUser"
+                                            />
+                                            <div class="w-4 h-4 mx-auto" :class="currentMonthObject[index].frequency.includes(employee.id) ? (!isToday(day) ? 'bg-k4green' : 'bg-k4pink') : 'bg-k4gray'" v-show="employee.id !== loggedUser"></div>
+                                        </template>
                                     </td>
                                 </template>
                                 <template v-else>
@@ -157,10 +164,12 @@ export default {
         return {
             today: today,
             employees: {},
+            loggedUser: null,
             currentMonth: currentMonth,
             currentYear: currentYear,
             currentMonthObject: currentMonthObject,
             holidays: [],
+            vacations: [],
             currentEmployeeIndex: currentEmployeeIndex,
             loading: true,
             weekday: ['Nd', 'Pn', 'Wt', 'Śr', 'Cz', 'Pt', 'Sb']
@@ -211,6 +220,7 @@ export default {
             }
             this.getHolidays();
             this.getEmployees();
+            this.getAllUsersVacations();
             this.getData();
         },
         prevMonth() {
@@ -222,6 +232,7 @@ export default {
             }
             this.getHolidays();
             this.getEmployees();
+            this.getAllUsersVacations();
             this.getData();
         },
         isFreeDay(day) {
@@ -270,7 +281,7 @@ export default {
             });
             const self = this;
             const data = {
-                employeeId: employeeId,
+                userId: employeeId,
                 day: day,
                 month: this.currentMonth,
                 year: this.currentYear
@@ -307,7 +318,7 @@ export default {
                 days = [...days, day.day];
             });
             const data = {
-                employeeId: employeeId,
+                userId: employeeId,
                 days: days,
                 month: this.currentMonth,
                 year: this.currentYear
@@ -337,7 +348,7 @@ export default {
             });
             const self = this;
             const data = {
-                employeeId: employeeId,
+                userId: employeeId,
                 day: day,
                 month: this.currentMonth,
                 year: this.currentYear
@@ -374,7 +385,7 @@ export default {
                 days = [...days, day.day];
             });
             const data = {
-                employeeId: employeeId,
+                userId: employeeId,
                 days: days,
                 month: this.currentMonth,
                 year: this.currentYear
@@ -407,6 +418,7 @@ export default {
                 '/getPresences',
                 data
             ).then(function(response){
+                self.loggedUser = response.data.loggedUser;
                 self.currentMonthObject = response.data.currentMonthObject;
                 self.currentMonthObject.map(function(day){
                     day.freeDay = self.isFreeDay(day.day);
@@ -419,12 +431,12 @@ export default {
         },
         getEmployees() {
             const self = this;
-            fetch('/employees')
+            fetch('/activeUsers')
                 .then(function(response) {
                     return response.json()
                 })
                 .then(function(data) {
-                    self.employees = data.employees;
+                    self.employees = data.users;
                     if(self.employees.length > 0 && self.currentEmployeeIndex === null) {
                         self.currentEmployeeIndex = 0;
                     }
@@ -447,6 +459,20 @@ export default {
                 console.error(error);
             });
         },
+        getAllUsersVacations() {
+            const self = this;
+            const data = {
+                month: this.currentMonth,
+                year: this.currentYear
+            };
+            axios.post('/getAllUsersVacations',data)
+            .then(function(response){
+                self.vacations = response.data.usersVacations;
+                console.log(response.data);
+            }).catch(function (response) {
+                console.log(response);
+            });
+        },
         isMobile() {
             if (this.$vssWidth > 1024) {
                 return false;
@@ -457,6 +483,7 @@ export default {
     mounted() {
         this.getHolidays();
         this.getEmployees();
+        this.getAllUsersVacations();
         this.getData();
     }
 };
