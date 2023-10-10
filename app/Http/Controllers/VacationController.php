@@ -2,22 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use Carbon\Carbon;
 use App\Models\Vacation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Date;
 
 class VacationController extends Controller
 {
-    /**
-     * Create a new controller instance.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        $this->middleware('auth');
-    }
-
     /**
      * Show the application dashboard.
      *
@@ -54,6 +46,20 @@ class VacationController extends Controller
         }
         $vacations = Vacation::where('user_id', Auth::user()->id)->orderBy('start_date')->get();
         return response()->json( compact('vacations', 'errors'));
+    }
+
+    public function getAllUsersVacations(Request $request)
+    {
+        $vacations = Vacation::where('start_date', '<=', $request->year . '-' . $request->month . '-31')->where('end_date', '>=', $request->year . '-' . $request->month . '-01')->orderBy('start_date')->get();
+        $usersVacations = [];
+        foreach ($vacations as $vacation) {
+            $startDay = $vacation->start_date < Carbon::parse($request->year . '-' . $request->month . '-01') ? 1 : intval(date('d', strtotime($vacation->start_date)));
+            $endDay = $vacation->end_date > Carbon::parse($request->year . '-' . $request->month . '-01')->endOfMonth() ? intval(date('t', strtotime($request->year . '-' . $request->month . '-01'))) : intval(date('d', strtotime($vacation->end_date)));
+            for ($i = $startDay; $i <= $endDay; $i++) {
+                $usersVacations[$vacation->user_id][] = $i;
+            }
+        }
+        return response()->json( compact('usersVacations'));
     }
 
     private function countWorkingDays($startDate, $endDate, $holidays) 

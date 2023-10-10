@@ -37,6 +37,7 @@ Route::post('/deleteUser', 'UserController@deleteUser')->middleware('auth');
 
 Route::get('/getUserVacations', 'VacationController@getUserVacations')->middleware('auth');
 Route::post('/addVacation', 'VacationController@addVacation')->middleware('auth');
+Route::post('/getAllUsersVacations', 'VacationController@getAllUsersVacations');
 
 // Route::post('/editEmployee', 'EmployeeController@editEmployee')->middleware('auth');
 

@@ -2,7 +2,7 @@
     <div class="relative p-6">
         <ul v-auto-animate>
             <li class="p-2 flex justify-between items-center even:bg-gray-50 odd:bg-white" v-for="(vacation, index) in vacations" :key="index">
-                <span>{{ index + 1 }}. {{ formatDate(vacation.start_date) }} - {{ formatDate(vacation.end_date) }}</span>
+                <span>{{ (index + 1).toString().padStart(2, '0') }}. {{ formatDate(vacation.start_date) }} - {{ formatDate(vacation.end_date) }}</span>
             </li>
         </ul>
         <div class="flex justify-center my-3">
