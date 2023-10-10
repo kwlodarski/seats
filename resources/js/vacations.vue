@@ -3,6 +3,9 @@
         <ul v-auto-animate>
             <li class="p-2 flex justify-between items-center even:bg-gray-50 odd:bg-white" v-for="(vacation, index) in vacations" :key="index">
                 <span>{{ (index + 1).toString().padStart(2, '0') }}. {{ formatDate(vacation.start_date) }} - {{ formatDate(vacation.end_date) }}</span>
+                <div class="">
+                    <button data-mdb-ripple="true" data-mdb-ripple-color="light" class="inline-block px-3 py-1.5 bg-red-500 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-red-600 hover:shadow-lg focus:bg-red-600 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-red-700 active:shadow-lg transition duration-150 ease-in-out" @click="getVacationCard(vacation.id)">Drukuj kartę urlopową</button>
+                </div>
             </li>
         </ul>
         <div class="flex justify-center my-3">
@@ -114,6 +117,9 @@ export default {
             }
             this.loading = false;
         },
+        getVacationCard(id) {
+            window.open('/getVacationCard/' + id, '_blank');
+        }
     },
     mounted() {
         this.getVacations();
