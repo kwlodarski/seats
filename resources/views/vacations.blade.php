@@ -13,7 +13,7 @@
         <section class="flex flex-col break-words bg-white sm:border-1 sm:rounded-md sm:shadow-lg">
 
             <header class="font-semibold bg-gray-200 text-gray-700 py-5 px-6 sm:py-6 sm:px-8 sm:rounded-t-md">
-                {{ __('Urlopy') }}
+                {{ __('Urlopy') }} {{ $countVacationDays }}
             </header>
 
             <div class="w-full" id="vacations"></div>

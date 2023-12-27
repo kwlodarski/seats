@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\Route;
 Auth::routes();
 
 Route::get('/settings', [App\Http\Controllers\SettingsController::class, 'index'])->name('settings');
-Route::get('/vacations', [App\Http\Controllers\VacationController::class, 'index'])->name('vacations');
+Route::get('/vacations', [App\Http\Controllers\VacationController::class, 'index'])->name('vacations')->middleware('auth');
 
 Route::get('/', function () {
     return view('welcome');

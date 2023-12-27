@@ -18,7 +18,8 @@ class VacationController extends Controller
      */
     public function index()
     {
-        return view('vacations');
+        $countVacationDays = $this->countAllVacationDaysInCurrentYearForAuthedUser();
+        return view('vacations', compact('countVacationDays'));
     }
 
     public function getUserVacations(Request $request)
@@ -81,7 +82,8 @@ class VacationController extends Controller
             'endDate' => $endDate,
             'workingDays' => $workingDays,
             'vacationDays' => $vacationDays,
-            'vacationHours' => $vacationHours
+            'vacationHours' => $vacationHours,
+            'currentDate' => Carbon::now()->format('d.m.Y')
         ];
         $pdf = Pdf::loadView('vacationCard', $data);
         return $pdf->stream('pdf_file.pdf');
@@ -91,8 +93,15 @@ class VacationController extends Controller
     {
         $begin = new \DateTime($startDate);
         $end = new \DateTime($endDate);
+        if ($begin == $end) {
+            if ($begin->format("N") < 6 && !in_array($begin->format("Y-m-d"), $holidays)) {
+                return 1;
+            } else {
+                return 0;
+            }
+        }
         $interval = \DateInterval::createFromDateString('1 day');
-        $period = new \DatePeriod($begin, $interval, $end);
+        $period = new \DatePeriod($begin, $interval, $end->modify('+1 day'));
         $count = 0;
         foreach ($period as $date) {
             if ($date->format("N") < 6 && !in_array($date->format("Y-m-d"), $holidays)) {
@@ -118,9 +127,33 @@ class VacationController extends Controller
                 }
             } catch (\Exception $e) {
                 echo "Wystąpił błąd: " . $e->getMessage() . "\n";
-                // Możesz również zalogować błąd lub podjąć inne kroki, jeśli to konieczne.
             }
         }
         return $holidays;
     }
+
+    public function countAllVacationDaysInCurrentYearForAuthedUser()
+    {
+        $currentYear = Carbon::now()->year;
+        $vacations = Vacation::where('user_id', Auth::user()->id)->where('start_date', '>=', $currentYear . '-01-01')->where('end_date', '<=', $currentYear . '-12-31')->get();
+        $countVacationDays = 0;
+        foreach ($vacations as $vacation) {
+            $startDate = Carbon::parse($vacation->start_date);
+            $endDate = Carbon::parse($vacation->end_date);
+            $holidays = $this->getHolidays($startDate->year, $endDate->year);
+            $workingDays = $this->countWorkingDays($startDate, $endDate, $holidays);
+            $countVacationDays += $workingDays - $vacation->days_off;
+        }
+        // dodanie dni urlopowych z przełomów lat
+        $vacations = Vacation::where('user_id', Auth::user()->id)->where('end_date', '>', $currentYear . '-12-31')->get();
+        foreach ($vacations as $vacation) {
+            $startDate = Carbon::parse($vacation->start_date);
+            $endDate = Carbon::parse($currentYear . '-12-31');
+            $holidays = $this->getHolidays($startDate->year, $endDate->year);
+            $workingDays = $this->countWorkingDays($startDate, $endDate, $holidays);
+            $countVacationDays += $workingDays - $vacation->days_off;
+        }
+        return $countVacationDays;
+    }
+
 }
