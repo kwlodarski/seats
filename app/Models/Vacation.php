@@ -5,10 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Employee extends Model
+class Vacation extends Model
 {
     use HasFactory;
 
     public $timestamps = false;
-    protected $fillable = ['name'];
+
+    protected $dates = ['start_date', 'end_date'];
+    protected $fillable = ['user_id', 'start_date', 'end_date'];
 }

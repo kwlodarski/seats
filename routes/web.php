@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -15,12 +16,15 @@ use Illuminate\Support\Facades\Route;
 Auth::routes();
 
 Route::get('/settings', [App\Http\Controllers\SettingsController::class, 'index'])->name('settings');
+Route::get('/vacations', [App\Http\Controllers\VacationController::class, 'index'])->name('vacations')->middleware('auth');
 
 Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/employees', 'EmployeeController@getAllEmployees');
+//Route::get('/employees', 'EmployeeController@getAllEmployees');
+Route::get('/users', 'UserController@getAllUsers');
+Route::get('/activeUsers', 'UserController@getActiveUsers');
 
 Route::post('/addPresence', 'PresenceController@addPresence');
 Route::post('/addPresences', 'PresenceController@addPresences');
@@ -28,8 +32,14 @@ Route::post('/removePresence', 'PresenceController@removePresence');
 Route::post('/removePresences', 'PresenceController@removePresences');
 Route::post('/getPresences', 'PresenceController@getPresences');
 
-Route::post('/addEmployee', 'EmployeeController@addEmployee')->middleware('auth');
-Route::post('/deleteEmployee', 'EmployeeController@deleteEmployee')->middleware('auth');
-Route::post('/editEmployee', 'EmployeeController@editEmployee')->middleware('auth');
+Route::post('/changeStatus', 'UserController@changeStatus')->middleware('auth');
+Route::post('/deleteUser', 'UserController@deleteUser')->middleware('auth');
+
+Route::get('/getUserVacations', 'VacationController@getUserVacations')->middleware('auth');
+Route::post('/addVacation', 'VacationController@addVacation')->middleware('auth');
+Route::post('/getAllUsersVacations', 'VacationController@getAllUsersVacations');
+Route::get('/getVacationCard/{id}', 'VacationController@getVacationCard')->middleware('auth');
+
+// Route::post('/editEmployee', 'EmployeeController@editEmployee')->middleware('auth');
 
 
