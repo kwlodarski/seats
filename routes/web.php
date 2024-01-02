@@ -40,6 +40,7 @@ Route::get('/getUserVacations', 'VacationController@getUserVacations')->middlewa
 Route::post('/addVacation', 'VacationController@addVacation')->middleware('auth');
 Route::post('/getAllUsersVacations', 'VacationController@getAllUsersVacations');
 Route::get('/getVacationCard/{id}', 'VacationController@getVacationCard')->middleware('auth');
+Route::post('/deleteVacation', 'VacationController@deleteVacation')->middleware('auth');
 
 // Route::post('/editEmployee', 'EmployeeController@editEmployee')->middleware('auth');
 

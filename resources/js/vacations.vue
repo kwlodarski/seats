@@ -2,9 +2,10 @@
     <div class="relative p-6">
         <ul v-auto-animate>
             <li class="p-2 flex justify-between items-center even:bg-gray-50 odd:bg-white" v-for="(vacation, index) in vacations" :key="index">
-                <span>{{ (index + 1).toString().padStart(2, '0') }}. {{ formatDate(vacation.start_date) }} - {{ formatDate(vacation.end_date) }}</span>
+                <span><small>{{ (index + 1).toString().padStart(2, '0') }}.</small> {{ formatDate(vacation.start_date) }} - {{ formatDate(vacation.end_date) }}</span>
                 <div class="">
-                    <button data-mdb-ripple="true" data-mdb-ripple-color="light" class="inline-block px-3 py-1.5 bg-red-500 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-red-600 hover:shadow-lg focus:bg-red-600 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-red-700 active:shadow-lg transition duration-150 ease-in-out" @click="getVacationCard(vacation.id)">Drukuj kartę urlopową</button>
+                    <button data-mdb-ripple="true" data-mdb-ripple-color="light" class="inline-block px-3 py-1.5 bg-blue-500 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-blue-600 hover:shadow-lg focus:bg-blue-600 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-700 active:shadow-lg transition duration-150 ease-in-out" @click="getVacationCard(vacation.id)"><svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 fill-white" viewBox="0 -960 960 960" width="24"><path d="M640-640v-120H320v120h-80v-200h480v200h-80Zm-480 80h640-640Zm560 100q17 0 28.5-11.5T760-500q0-17-11.5-28.5T720-540q-17 0-28.5 11.5T680-500q0 17 11.5 28.5T720-460Zm-80 260v-160H320v160h320Zm80 80H240v-160H80v-240q0-51 35-85.5t85-34.5h560q51 0 85.5 34.5T880-520v240H720v160Zm80-240v-160q0-17-11.5-28.5T760-560H200q-17 0-28.5 11.5T160-520v160h80v-80h480v80h80Z"/></svg></button>
+                    <button type="button" data-mdb-ripple="true" data-mdb-ripple-color="light" @click="deleteVacation(vacation.id)" class="ml-2 inline-block px-3 py-1.5 bg-red-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-red-700 hover:shadow-lg focus:bg-red-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-red-800 active:shadow-lg transition duration-150 ease-in-out"><svg class="w-4 h-4 fill-white" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24"><path d="M280-120q-33 0-56.5-23.5T200-200v-520h-40v-80h200v-40h240v40h200v80h-40v520q0 33-23.5 56.5T680-120H280Zm400-600H280v520h400v-520ZM360-280h80v-360h-80v360Zm160 0h80v-360h-80v360ZM280-720v520-520Z"/></svg></button>
                 </div>
             </li>
         </ul>
@@ -110,6 +111,23 @@ export default {
                     this.vacations = response.data.vacations;
                     document.getElementById('count-vacation-days').innerHTML = response.data.countVacationDays;
                     this.closePopup();
+                } else {
+                    this.errors = response.data.errors;
+                }
+            } catch (e) {
+                console.log(e);
+            }
+            this.loading = false;
+        },
+        async deleteVacation(id) {
+            this.loading = true;
+            try {
+                const response = await axios.post('/deleteVacation', {
+                    vacationId: id
+                });
+                if (response.data) {
+                    this.vacations = response.data.vacations;
+                    document.getElementById('count-vacation-days').innerHTML = response.data.countVacationDays;
                 } else {
                     this.errors = response.data.errors;
                 }

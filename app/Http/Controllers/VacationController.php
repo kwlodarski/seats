@@ -157,4 +157,13 @@ class VacationController extends Controller
         return $countVacationDays;
     }
 
+    public function deleteVacation(Request $request)
+    {
+        $vacation = Vacation::find($request->vacationId);
+        $vacation->delete();
+        $vacations = Vacation::where('user_id', Auth::user()->id)->orderBy('start_date')->get();
+        $countVacationDays = $this->countAllVacationDaysInCurrentYearForAuthedUser();
+        return response()->json( compact('vacations', 'countVacationDays'));
+    }
+
 }
