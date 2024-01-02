@@ -56,7 +56,9 @@
                                 {{-- <span>{{ Auth::user()->name }}</span> --}}
                                 <li><a class="block py-4 md:py-2 pl-3 pr-4 text-white md:p-0 text-xs tracking-widest font-bold uppercase" href="{{ url('/') }}">{{ __('Kalendarz') }}</a></li>
                                 <li><a class="block py-4 md:py-2 pl-3 pr-4 text-white md:p-0 text-xs tracking-widest font-bold uppercase" href="{{ route('vacations') }}">{{ __('Urlopy') }}</a></li>
-                                <li><a class="block py-4 md:py-2 pl-3 pr-4 text-white md:p-0 text-xs tracking-widest font-bold uppercase" href="{{ route('settings') }}">{{ __('Ustawienia') }}</a></li>
+                                @if (Auth::user()->is_admin)
+                                    <li><a class="block py-4 md:py-2 pl-3 pr-4 text-white md:p-0 text-xs tracking-widest font-bold uppercase" href="{{ route('settings') }}">{{ __('Ustawienia') }}</a></li>
+                                @endif
                                 <li>
                                     <a href="{{ route('logout') }}" class="block py-4 md:py-2 pl-3 pr-4 text-white md:p-0 text-xs tracking-widest font-bold uppercase" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">{{ __('Wyloguj') }}</a>
                                     <form id="logout-form" action="{{ route('logout') }}" method="POST" class="hidden">

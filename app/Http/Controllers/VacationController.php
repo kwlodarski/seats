@@ -47,7 +47,8 @@ class VacationController extends Controller
             $errors[] = __('Data końca urlopu nie może być wcześniejsza niż data początku urlopu.');
         }
         $vacations = Vacation::where('user_id', Auth::user()->id)->orderBy('start_date')->get();
-        return response()->json( compact('vacations', 'errors'));
+        $countVacationDays = $this->countAllVacationDaysInCurrentYearForAuthedUser();
+        return response()->json( compact('vacations', 'errors', 'countVacationDays'));
     }
 
     public function getAllUsersVacations(Request $request)

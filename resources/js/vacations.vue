@@ -108,6 +108,7 @@ export default {
                 });
                 if (response.data.errors.length === 0) {
                     this.vacations = response.data.vacations;
+                    document.getElementById('count-vacation-days').innerHTML = response.data.countVacationDays;
                     this.closePopup();
                 } else {
                     this.errors = response.data.errors;
