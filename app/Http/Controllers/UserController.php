@@ -49,4 +49,11 @@ class UserController extends Controller
         $user->save();
         return response()->json( compact('user') );
     }
+
+    public function isAdmin()
+    {
+        $user = auth()->user();
+        return $user->is_admin;
+
+    }
 }
