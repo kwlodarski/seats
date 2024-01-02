@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Presence;
+use App\Models\Vacation;
+use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
@@ -27,8 +28,17 @@ class UserController extends Controller
     public function deleteUser(Request $request)
     {
         $user = User::find($request->employeeId);
-        $presences = Presence::where('employee_id', $request->employeeId)->delete();
+        $presences = Presence::where('user_id', $request->employeeId)->delete();
+        $vacations = Vacation::where('user_id', $request->employeeId)->delete();
         $user->delete();
+        return response()->json( compact('user') );
+    }
+
+    public function editUser(Request $request)
+    {
+        $user = User::find($request->employeeId);
+        $user->name = $request->name;
+        $user->save();
         return response()->json( compact('user') );
     }
 

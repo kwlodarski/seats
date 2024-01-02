@@ -150,9 +150,7 @@ export default {
                     '/deleteUser',
                     data
                 ).then(function(response){
-                    self.employees = self.employees.filter(function (employee) {
-                        return employee.id !== response.data.employeeId;
-                    });
+                    self.getEmployees();
                     self.closePopup();
                 }).catch(function (response) {
                     self.loading = false;
@@ -168,12 +166,12 @@ export default {
                     name: this.name
                 };
                 axios.post(
-                    '/editEmployee',
+                    '/editUser',
                     data
                 ).then(function(response){
                     self.employees = self.employees.map(employee => {
-                        if (employee.id === response.data.employeeId) {
-                            return {...employee, name: response.data.name};
+                        if (employee.id === response.data.user.id) {
+                            return {...employee, name: response.data.user.name};
                         }
                         return employee;
                     });
