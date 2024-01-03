@@ -25,7 +25,8 @@ class VacationController extends Controller
     public function getUserVacations(Request $request)
     {
         $vacations = Vacation::where('user_id', Auth::user()->id)->orderBy('start_date')->get();
-        return response()->json( compact('vacations'));
+        $workingTime = Auth::user()->working_time;
+        return response()->json( compact('vacations', 'workingTime'));
     }
 
     public function addVacation(Request $request)
@@ -38,6 +39,7 @@ class VacationController extends Controller
                 $vacation->user_id = Auth::user()->id;
                 $vacation->start_date = $request->startDate;
                 $vacation->end_date = $request->endDate;
+                $vacation->working_time = $request->workingTime;
                 $vacation->save();
             } else {
                 $errors[] = __('Istnieje juz urlop w podanym terminie.');
@@ -74,8 +76,7 @@ class VacationController extends Controller
         $holidays = $this->getHolidays($startDate->year, $endDate->year);
         $workingDays = $this->countWorkingDays($startDate, $endDate, $holidays);
         $vacationDays = $workingDays - $vacation->days_off;
-        $vacationHours = $vacationDays * 8;
-        // return view('vacationCard', compact('vacation', 'user', 'workingDays', 'startDate', 'endDate', 'vacationDays', 'vacationHours'));
+        $vacationHours = $vacationDays * $vacation->working_time;
         $data = [
             'vacation' => $vacation,
             'user' => $user,
@@ -145,7 +146,6 @@ class VacationController extends Controller
             $workingDays = $this->countWorkingDays($startDate, $endDate, $holidays);
             $countVacationDays += $workingDays - $vacation->days_off;
         }
-        // dodanie dni urlopowych z przełomów lat
         $vacations = Vacation::where('user_id', Auth::user()->id)->where('end_date', '>', $currentYear . '-12-31')->get();
         foreach ($vacations as $vacation) {
             $startDate = Carbon::parse($vacation->start_date);

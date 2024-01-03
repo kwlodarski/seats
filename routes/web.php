@@ -35,6 +35,7 @@ Route::post('/getPresences', 'PresenceController@getPresences');
 Route::post('/changeStatus', 'UserController@changeStatus')->middleware('auth');
 Route::post('/deleteUser', 'UserController@deleteUser')->middleware('auth');
 Route::post('/editUser', 'UserController@editUser')->middleware('auth');
+Route::post('/updateOrder', 'UserController@updateOrder')->middleware('auth');
 
 Route::get('/getUserVacations', 'VacationController@getUserVacations')->middleware('auth');
 Route::post('/addVacation', 'VacationController@addVacation')->middleware('auth');

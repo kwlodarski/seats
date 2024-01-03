@@ -16,6 +16,7 @@ class CreateVacationsTable extends Migration
         Schema::create('vacations', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained();
+            $table->smallInteger('working_time');
             $table->date('start_date');
             $table->date('end_date');
         });

@@ -34,7 +34,9 @@
                                         <label for="start_date" class="form-label inline-block mb-2 text-gray-700">Data początku urlopu:</label>
                                         <input type="date" class="mb-4 form-control block w-full px-3 py-1.5 text-base font-normal text-gray-700 bg-white bg-clip-padding border border-solid rounded transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none border-gray-300" id="start_date" autocomplete="off" />
                                         <label for="end_date" class="form-label inline-block mb-2 text-gray-700">Data końca urlopu:</label>
-                                        <input type="date" class="form-control block w-full px-3 py-1.5 text-base font-normal text-gray-700 bg-white bg-clip-padding border border-solid rounded transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none border-gray-300" id="end_date" autocomplete="off" />
+                                        <input type="date" class="mb-4 form-control block w-full px-3 py-1.5 text-base font-normal text-gray-700 bg-white bg-clip-padding border border-solid rounded transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none border-gray-300" id="end_date" autocomplete="off" />
+                                        <label for="working_time" class="form-label inline-block mb-2 text-gray-700">Dzienny wymiar godzin pracy:</label>
+                                        <input type="number" class="form-control block w-full px-3 py-1.5 text-base font-normal text-gray-700 bg-white bg-clip-padding border border-solid rounded transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none border-gray-300" v-model="workingTime" id="working_time" />
                                         <template v-for="error in errors">
                                             <p class="text-red-500 my-2 text-sm">{{ error }}</p>
                                         </template>
@@ -71,6 +73,7 @@ export default {
             loading: false,
             popup: false,
             action: null,
+            workingTime: null,
             vacations: [],
             errors: []
         };
@@ -81,6 +84,7 @@ export default {
             try {
                 const response = await axios.get('/getUserVacations');
                 this.vacations = response.data.vacations;
+                this.workingTime = response.data.workingTime;
             } catch (e) {
                 console.log(e);
             }
@@ -106,6 +110,7 @@ export default {
                 const response = await axios.post('/addVacation', {
                     startDate: document.getElementById('start_date').value,
                     endDate: document.getElementById('end_date').value,
+                    workingTime: this.workingTime
                 });
                 if (response.data.errors.length === 0) {
                     this.vacations = response.data.vacations;

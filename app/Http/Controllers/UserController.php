@@ -11,7 +11,7 @@ class UserController extends Controller
 {
     public function getAllUsers(User $user)
     {
-        $users = $user->get();
+        $users = $user->orderBy('order')->get();
         $users->transform(function($user) {
             $user->is_active = $user->is_active ? true : false;
             return $user;
@@ -21,7 +21,7 @@ class UserController extends Controller
 
     public function getActiveUsers(User $user)
     {
-        $users = $user->where('is_active', 1)->get();
+        $users = $user->where('is_active', 1)->orderBy('order')->get();
         return response()->json( compact('users') );
     }
 
@@ -38,6 +38,7 @@ class UserController extends Controller
     {
         $user = User::find($request->employeeId);
         $user->name = $request->name;
+        $user->working_time = $request->workingTime;
         $user->save();
         return response()->json( compact('user') );
     }
@@ -54,6 +55,15 @@ class UserController extends Controller
     {
         $user = auth()->user();
         return $user->is_admin;
+    }
 
+    public function updateOrder(Request $request)
+    {
+        foreach ($request->employees as $key=>$employee) {
+            $user = User::find($employee['id']);
+            $user->order = $key;
+            $user->save();
+        }
+        $this->getAllUsers(new User());
     }
 }
