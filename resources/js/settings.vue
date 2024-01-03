@@ -203,12 +203,7 @@ export default {
                 axios.post(
                     '/updateOrder',
                     data
-                ).then(function(response) {
-                    return response.json()
-                })
-                .then(function(data) {
-                    self.employees = data.users;
-                });
+                )
             }
         },
     },
