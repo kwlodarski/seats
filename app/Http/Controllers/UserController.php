@@ -36,11 +36,16 @@ class UserController extends Controller
 
     public function editUser(Request $request)
     {
+        $errors = [];
         $user = User::find($request->employeeId);
-        $user->name = $request->name;
-        $user->working_time = $request->workingTime;
-        $user->save();
-        return response()->json( compact('user') );
+        if ($request->workingTime > 24 || $request->workingTime < 1) {
+            $errors[] = __('Nie można pracować więcej niż 24 godziny na dobę, ani krócej niż godzinę:)');
+        } else {
+            $user->name = $request->name;
+            $user->working_time = $request->workingTime;
+            $user->save();
+        }
+        return response()->json( compact('user', 'errors') );
     }
 
     public function changeStatus(Request $request)

@@ -38,7 +38,7 @@
                                         <label for="end_date" class="form-label inline-block mb-2 text-gray-700">Data końca urlopu:</label>
                                         <input type="date" class="mb-4 form-control block w-full px-3 py-1.5 text-base font-normal text-gray-700 bg-white bg-clip-padding border border-solid rounded transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none border-gray-300" id="end_date" autocomplete="off" />
                                         <label for="working_time" class="form-label inline-block mb-2 text-gray-700">Dzienny wymiar godzin pracy:</label>
-                                        <input type="number" class="form-control block w-full px-3 py-1.5 text-base font-normal text-gray-700 bg-white bg-clip-padding border border-solid rounded transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none border-gray-300" v-model="workingTime" id="working_time" />
+                                        <input type="number" step="1" min="1" max="24" class="form-control block w-full px-3 py-1.5 text-base font-normal text-gray-700 bg-white bg-clip-padding border border-solid rounded transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none border-gray-300" v-model="workingTime" id="working_time" />
                                         <template v-for="error in errors">
                                             <p class="text-red-500 my-2 text-sm">{{ error }}</p>
                                         </template>

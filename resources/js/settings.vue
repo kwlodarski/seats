@@ -56,9 +56,9 @@
                                         <label for="editName" class="form-label inline-block mb-2 text-gray-700">Imię pracownika:</label>
                                         <input type="text" class="mb-4 form-control block w-full px-3 py-1.5 text-base font-normal text-gray-700 bg-white bg-clip-padding border border-solid rounded transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none border-gray-300" v-model="name" id="editName" autocomplete="name" />
                                         <label for="editWorkingTime" class="form-label inline-block mb-2 text-gray-700">Dzienny wymiar godzin pracy:</label>
-                                        <input type="number" class="form-control block w-full px-3 py-1.5 text-base font-normal text-gray-700 bg-white bg-clip-padding border border-solid rounded transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none border-gray-300" v-model="workingTime" id="editWorkingTime" />
-                                        <template v-for="fieldErrors in errors">
-                                            <p v-for="error in fieldErrors" class="text-red-500 my-2 text-sm">{{ error }}</p>
+                                        <input type="number" step="1" min="1" max="24" class="form-control block w-full px-3 py-1.5 text-base font-normal text-gray-700 bg-white bg-clip-padding border border-solid rounded transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none border-gray-300" v-model="workingTime" id="editWorkingTime" />
+                                        <template v-for="error in errors">
+                                            <p class="text-red-500 my-2 text-sm">{{ error }}</p>
                                         </template>
                                     </div>
                                 </div>
@@ -70,7 +70,6 @@
                         <button type="button" @click="closePopup()" data-mdb-ripple="true" data-mdb-ripple-color="light" class="block w-full max-w-xs px-4 py-2 transition duration-100 ease-in-out bg-white border border-gray-300 rounded shadow-sm hover:bg-gray-100 focus:border-gray-100 focus:ring-2 focus:ring-blue-500 focus:outline-none focus:ring-opacity-50 disabled:opacity-50 disabled:cursor-not-allowed" aria-label="Anuluj">Anuluj</button>
                         <button @click="deleteEmployee()" v-if="action==='delete' && employeeId" type="button" data-mdb-ripple="true" data-mdb-ripple-color="light" class="block w-full max-w-xs px-4 py-2 text-white transition duration-100 ease-in-out bg-blue-500 border border-transparent rounded shadow-sm hover:bg-blue-600 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none focus:ring-opacity-50 disabled:opacity-50 disabled:cursor-not-allowed" aria-label="Potwierdzam">Potwierdzam</button>
                         <button @click="editEmployee()" v-if="action==='edit' && employeeId" type="button" data-mdb-ripple="true" data-mdb-ripple-color="light" class="block w-full max-w-xs px-4 py-2 text-white transition duration-100 ease-in-out bg-blue-500 border border-transparent rounded shadow-sm hover:bg-blue-600 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none focus:ring-opacity-50 disabled:opacity-50 disabled:cursor-not-allowed" aria-label="Zapisz">Zapisz</button>
-                        <button @click="addEmployee()" v-if="action==='add'" type="button" data-mdb-ripple="true" data-mdb-ripple-color="light" class="block w-full max-w-xs px-4 py-2 text-white transition duration-100 ease-in-out bg-blue-500 border border-transparent rounded shadow-sm hover:bg-blue-600 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none focus:ring-opacity-50 disabled:opacity-50 disabled:cursor-not-allowed" aria-label="Dodaj">Dodaj</button>
                     </div>
 
                     <div v-if="loading" class="w-full h-full absolute top-0 left-0 bg-gray-200/70 grid content-center justify-center">
@@ -152,30 +151,33 @@ export default {
                 });
             }
         },
-        editEmployee() {
+        async editEmployee() {
             if(this.action === 'edit' && this.employeeId) {
                 this.loading = true;
                 const self = this;
-                const data = {
-                    employeeId: this.employeeId,
-                    name: this.name,
-                    workingTime: this.workingTime
-                };
-                axios.post(
-                    '/editUser',
-                    data
-                ).then(function(response){
-                    self.employees = self.employees.map(employee => {
-                        if (employee.id === response.data.user.id) {
-                            return {...employee, name: response.data.user.name, working_time: response.data.user.working_time};
-                        }
-                        return employee;
-                    });
-                    self.closePopup();
-                }).catch(error => {
-                    self.errors = error.response.data.errors;
-                    self.loading = false;
-                });
+                this.errors = [];
+                try {
+                    const data = {
+                        employeeId: self.employeeId,
+                        name: self.name,
+                        workingTime: self.workingTime
+                    };
+                    const response = await axios.post('/editUser', data);
+                    if (response.data.errors.length === 0) {
+                        self.employees = self.employees.map(employee => {
+                            if (employee.id === response.data.user.id) {
+                                return {...employee, name: response.data.user.name, working_time: response.data.user.working_time};
+                            }
+                            return employee;
+                        });
+                        self.closePopup();
+                    } else {
+                        this.errors = response.data.errors;
+                    }
+                } catch (e) {
+                    console.log(e);
+                }
+                this.loading = false;
             }
         },
         changeStatus(employeeId) {
