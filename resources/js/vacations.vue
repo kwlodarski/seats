@@ -31,6 +31,8 @@
                             <div class="w-full text-center">
                                 <div class="flex justify-center">
                                     <div class="my-3 xl:w-96 text-left">
+                                        <label for="request_date" class="form-label inline-block mb-2 text-gray-700">Data wniosku:</label>
+                                        <input type="date" class="mb-4 form-control block w-full px-3 py-1.5 text-base font-normal text-gray-700 bg-white bg-clip-padding border border-solid rounded transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none border-gray-300" v-model="requestDate" id="request_date" autocomplete="off" />
                                         <label for="start_date" class="form-label inline-block mb-2 text-gray-700">Data początku urlopu:</label>
                                         <input type="date" class="mb-4 form-control block w-full px-3 py-1.5 text-base font-normal text-gray-700 bg-white bg-clip-padding border border-solid rounded transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none border-gray-300" id="start_date" autocomplete="off" />
                                         <label for="end_date" class="form-label inline-block mb-2 text-gray-700">Data końca urlopu:</label>
@@ -75,7 +77,8 @@ export default {
             action: null,
             workingTime: null,
             vacations: [],
-            errors: []
+            errors: [],
+            requestDate: null
         };
     },
     methods: {
@@ -108,6 +111,7 @@ export default {
             this.loading = true;
             try {
                 const response = await axios.post('/addVacation', {
+                    requestDate: document.getElementById('request_date').value,
                     startDate: document.getElementById('start_date').value,
                     endDate: document.getElementById('end_date').value,
                     workingTime: this.workingTime
@@ -147,6 +151,7 @@ export default {
     },
     mounted() {
         this.getVacations();
+        this.requestDate = moment().format('YYYY-MM-DD');
     }
 }
 </script>

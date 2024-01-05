@@ -37,6 +37,7 @@ class VacationController extends Controller
             $vacations = Vacation::where('user_id', Auth::user()->id)->where('start_date', '<=', $request->endDate)->where('end_date', '>=', $request->startDate)->get();
             if ($vacations->count() == 0) {
                 $vacation->user_id = Auth::user()->id;
+                $vacation->request_date = $request->requestDate;
                 $vacation->start_date = $request->startDate;
                 $vacation->end_date = $request->endDate;
                 $vacation->working_time = $request->workingTime;
@@ -73,6 +74,7 @@ class VacationController extends Controller
         $user = User::find($vacation->user_id);
         $startDate = Carbon::parse($vacation->start_date);
         $endDate = Carbon::parse($vacation->end_date);
+        $requestDate = Carbon::parse($vacation->request_date);
         $holidays = $this->getHolidays($startDate->year, $endDate->year);
         $workingDays = $this->countWorkingDays($startDate, $endDate, $holidays);
         $vacationDays = $workingDays - $vacation->days_off;
@@ -85,7 +87,7 @@ class VacationController extends Controller
             'workingDays' => $workingDays,
             'vacationDays' => $vacationDays,
             'vacationHours' => $vacationHours,
-            'currentDate' => Carbon::now()->format('d.m.Y')
+            'requestDate' => $requestDate
         ];
         $pdf = Pdf::loadView('vacationCard', $data);
         return $pdf->stream('pdf_file.pdf');

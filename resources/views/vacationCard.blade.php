@@ -66,7 +66,7 @@
 <body>
     <div class="header">
         <div class="left">{{ $user->name }}</div>
-        <div class="right">Łódź, dnia {{ $currentDate }}</div>
+        <div class="right">Łódź, dnia {{ $requestDate->format('d.m.Y') }}</div>
     </div>
     <h1>WNIOSEK O UDZIELENIE URLOPU WYPOCZYNKOWEGO</h1>
 
@@ -81,8 +81,8 @@
     </div>
 
     <div class="footer">
-        <div class="left">{{ $currentDate }} ....................................<br><small>(data i podpis bezpośredniego przełożonego)</small></div>
-        <div class="right">{{ $currentDate }} ....................................<br><small>(data i podpis pracownika)</small></div>
+        <div class="left">{{ $requestDate->format('d.m.Y') }} ....................................<br><small>(data i podpis bezpośredniego przełożonego)</small></div>
+        <div class="right">{{ $requestDate->format('d.m.Y') }} ....................................<br><small>(data i podpis pracownika)</small></div>
     </div>
 </body>
 </html>

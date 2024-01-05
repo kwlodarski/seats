@@ -17,6 +17,7 @@ class CreateVacationsTable extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained();
             $table->smallInteger('working_time', false, true);
+            $table->date('request_date');
             $table->date('start_date');
             $table->date('end_date');
         });
