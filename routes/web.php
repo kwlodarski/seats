@@ -15,14 +15,13 @@ use Illuminate\Support\Facades\Route;
 */
 Auth::routes();
 
-Route::get('/settings', [App\Http\Controllers\SettingsController::class, 'index'])->name('settings')->middleware('auth');
-Route::get('/vacations', [App\Http\Controllers\VacationController::class, 'index'])->name('vacations')->middleware('auth');
+Route::get('/settings', 'SettingsController@index')->name('settings')->middleware('auth');
+Route::get('/vacations', 'VacationController@index')->name('vacations')->middleware('auth');
 
 Route::get('/', function () {
     return view('welcome');
 });
 
-//Route::get('/employees', 'EmployeeController@getAllEmployees');
 Route::get('/users', 'UserController@getAllUsers');
 Route::get('/activeUsers', 'UserController@getActiveUsers');
 
@@ -43,6 +42,5 @@ Route::post('/getAllUsersVacations', 'VacationController@getAllUsersVacations');
 Route::get('/getVacationCard/{id}', 'VacationController@getVacationCard')->middleware('auth');
 Route::post('/deleteVacation', 'VacationController@deleteVacation')->middleware('auth');
 
-// Route::post('/editEmployee', 'EmployeeController@editEmployee')->middleware('auth');
 
 
