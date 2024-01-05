@@ -35,17 +35,22 @@ class VacationController extends Controller
         $vacation = new Vacation();
         if ($request->startDate <= $request->endDate) {
             $vacations = Vacation::where('user_id', Auth::user()->id)->where('start_date', '<=', $request->endDate)->where('end_date', '>=', $request->startDate)->get();
-            if ($vacations->count() == 0) {
-                $vacation->user_id = Auth::user()->id;
-                $vacation->request_date = $request->requestDate;
-                $vacation->start_date = $request->startDate;
-                $vacation->end_date = $request->endDate;
-                $vacation->working_time = $request->workingTime;
-                $vacation->save();
+            if ($request->requestDate > $request->startDate) {
+                $errors[] = __('Data złożenia wniosku nie może być późniejsza niż data rozpoczęcia urlopu.');
+            } else if ($request->workingTime > 24 || $request->workingTime < 1) {
+                $errors[] = __('Nie można pracować więcej niż 24 godziny na dobę, ani krócej niż godzinę:)');
             } else {
-                $errors[] = __('Istnieje juz urlop w podanym terminie.');
+                if ($vacations->count() == 0) {
+                    $vacation->user_id = Auth::user()->id;
+                    $vacation->request_date = $request->requestDate;
+                    $vacation->start_date = $request->startDate;
+                    $vacation->end_date = $request->endDate;
+                    $vacation->working_time = $request->workingTime;
+                    $vacation->save();
+                } else {
+                    $errors[] = __('Istnieje juz urlop w podanym terminie.');
+                }
             }
-            
         } else {
             $errors[] = __('Data końca urlopu nie może być wcześniejsza niż data początku urlopu.');
         }
