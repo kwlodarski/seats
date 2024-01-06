@@ -36,7 +36,7 @@
                                         </div>
                                         <div class="flex-2 text-center">
                                             <p class="font-bold mb-0">{{ employees[currentEmployeeIndex].name }}</p>
-                                            <div class="form-check flex justify-center items-center" v-show="employees[currentEmployeeIndex].id === loggedUser">
+                                            <div class="form-check flex justify-center items-center" v-show="employees[currentEmployeeIndex].id === loggedUser || isAdmin">
                                                 <input class="form-check-input appearance-none h-4 w-4 border border-gray-300 rounded-sm bg-white checked:bg-k4green checked:border-k4green focus:outline-none transition duration-200 align-top bg-no-repeat bg-center bg-contain float-left mr-2 cursor-pointer" type="checkbox" @change="changeAllFrequency($event, index, employees[currentEmployeeIndex].id)" :id="[`employee-${currentEmployeeIndex}`]" :checked="isFullFrequency(employees[currentEmployeeIndex].id) ? true : false">
                                                 <label class="form-check-label inline-block text-sm font-light" :for="[`employee-${currentEmployeeIndex}`]">
                                                     wszystkie dni
@@ -55,7 +55,7 @@
                                 <td></td>
                                 <td class="px-2 py-1 text-center cell-for-slider" v-for="(employee, index) in employees" :key="index">
                                     <p class="font-bold mb-0">{{ employees[index].name }}</p>
-                                    <div class="form-check flex justify-center items-center" v-show="employee.id === loggedUser">
+                                    <div class="form-check flex justify-center items-center" v-show="employee.id === loggedUser || isAdmin">
                                         <input class="form-check-input appearance-none h-4 w-4 border border-gray-300 rounded-sm bg-white checked:bg-k4green checked:border-k4green focus:outline-none transition duration-200 align-top bg-no-repeat bg-center bg-contain float-left mr-2 cursor-pointer" type="checkbox" @change="changeAllFrequency($event, index, employee.id)" :id="[`employee-${index}`]" :checked="isFullFrequency(employees[index].id) ? true : false">
                                         <label class="form-check-label inline-block text-sm font-light" :for="[`employee-${index}`]">
                                             wszystkie dni
@@ -81,7 +81,9 @@
                                             :class="[`frequency-${day}`],{'checked:bg-k4green checked:border-k4green': !isToday(day), 'checked:bg-k4pink checked:border-k4pink': isToday(day)}"
                                             @change="changeFrequency($event, index, day, employees[currentEmployeeIndex].id)"
                                             :checked="currentMonthObject[index].frequency.includes(employees[currentEmployeeIndex].id) ? true : false"
+                                            v-show="employees[currentEmployeeIndex].id === loggedUser || isAdmin"
                                         />
+                                        <div class="w-4 h-4 mx-auto" :class="currentMonthObject[index].frequency.includes(employees[currentEmployeeIndex].id) ? (!isToday(day) ? 'bg-k4green' : 'bg-k4pink') : 'bg-k4gray'" v-show="employees[currentEmployeeIndex].id !== loggedUser && !isAdmin"></div>
                                     </td>
                                 </template>
                                 <template v-else>
@@ -105,9 +107,9 @@
                                                 :class="[`frequency-${day}`],{'checked:bg-k4green checked:border-k4green': !isToday(day), 'checked:bg-k4pink checked:border-k4pink': isToday(day)}"
                                                 @change="changeFrequency($event, index, day, employee.id)"
                                                 :checked="currentMonthObject[index].frequency.includes(employee.id) ? true : false"
-                                                v-show="employee.id === loggedUser"
+                                                v-show="employee.id === loggedUser || isAdmin"
                                             />
-                                            <div class="w-4 h-4 mx-auto" :class="currentMonthObject[index].frequency.includes(employee.id) ? (!isToday(day) ? 'bg-k4green' : 'bg-k4pink') : 'bg-k4gray'" v-show="employee.id !== loggedUser"></div>
+                                            <div class="w-4 h-4 mx-auto" :class="currentMonthObject[index].frequency.includes(employee.id) ? (!isToday(day) ? 'bg-k4green' : 'bg-k4pink') : 'bg-k4gray'" v-show="employee.id !== loggedUser && !isAdmin"></div>
                                         </template>
                                     </td>
                                 </template>
@@ -165,6 +167,7 @@ export default {
             today: today,
             employees: {},
             loggedUser: null,
+            isAdmin: false,
             currentMonth: currentMonth,
             currentYear: currentYear,
             currentMonthObject: currentMonthObject,
@@ -419,6 +422,7 @@ export default {
                 data
             ).then(function(response){
                 self.loggedUser = response.data.loggedUser;
+                self.isAdmin = response.data.isAdmin;
                 self.currentMonthObject = response.data.currentMonthObject;
                 self.currentMonthObject.map(function(day){
                     day.freeDay = self.isFreeDay(day.day);

@@ -60,10 +60,14 @@ class PresenceController extends Controller
     {
         $currentMonthObject = $this->buildMonthObject($request->month, $request->year);
         $loggedUser = null;
+        $isAdmin = false;
         if (Auth::user()) {
             $loggedUser = Auth::user()->id;
         }
-        return response()->json( compact('currentMonthObject', 'loggedUser'));
+        if (Auth::user() && Auth::user()->is_admin) {
+            $isAdmin = true;
+        }
+        return response()->json( compact('currentMonthObject', 'loggedUser', 'isAdmin'));
     }
 
     public function buildMonthObject($month, $year) 
