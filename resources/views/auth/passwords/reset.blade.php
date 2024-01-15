@@ -41,13 +41,8 @@
 
                     <div class="flex justify-center">
                         <div class="mb-3 xl:w-96">
-                            <label for="password" class="form-label inline-block mb-2 text-gray-700">{{ __('Password') }}:</label>
-                            <input type="password" class="form-control block w-full px-3 py-1.5 text-base font-normal text-gray-700 bg-white bg-clip-padding border border-solid rounded transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none border-gray-300 @error('password') border-red-500 @enderror" id="password" name="password" required autocomplete="new-password"/>
-                            @error('password')
-                            <p class="text-red-500 text-xs italic mt-4">
-                                {{ $message }}
-                            </p>
-                            @enderror
+                            <label for="password-confirm" class="form-label inline-block mb-2 text-gray-700">{{ __('Confirm Password') }}:</label>
+                            <input type="password" class="form-control block w-full px-3 py-1.5 text-base font-normal text-gray-700 bg-white bg-clip-padding border border-solid rounded transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none border-gray-300" id="password-confirm" name="password_confirmation" required autocomplete="new-password"/>
                         </div>
                     </div>
 
