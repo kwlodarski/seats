@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use App\Models\User;
+use App\Models\Presence;
 use App\Models\Vacation;
 use Illuminate\Http\Request;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Auth;
 
 class VacationController extends Controller
@@ -41,6 +42,14 @@ class VacationController extends Controller
                 $errors[] = __('Nie można pracować więcej niż 24 godziny na dobę, ani krócej niż godzinę:)');
             } else {
                 if ($vacations->count() == 0) {
+                    $presences = Presence::where('user_id', Auth::user()->id)
+                    ->whereBetween('date', [$request->startDate, $request->endDate])
+                    ->get();
+                    if ($presences->isNotEmpty()) {
+                        foreach ($presences as $presence) {
+                            $presence->delete();
+                        }
+                    }
                     $vacation->user_id = Auth::user()->id;
                     $vacation->request_date = $request->requestDate;
                     $vacation->start_date = $request->startDate;
