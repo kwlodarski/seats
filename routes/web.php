@@ -41,6 +41,7 @@ Route::post('/addVacation', 'VacationController@addVacation')->middleware('auth'
 Route::post('/getAllUsersVacations', 'VacationController@getAllUsersVacations');
 Route::get('/getVacationCard/{id}', 'VacationController@getVacationCard')->middleware('auth');
 Route::post('/deleteVacation', 'VacationController@deleteVacation')->middleware('auth');
+Route::post('/sendVacationToAccountant', 'VacationController@sendVacationToAccountant')->middleware('auth');
 
 
 
