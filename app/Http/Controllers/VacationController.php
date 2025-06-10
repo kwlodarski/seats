@@ -55,6 +55,7 @@ class VacationController extends Controller
                     $vacation->start_date = $request->startDate;
                     $vacation->end_date = $request->endDate;
                     $vacation->working_time = $request->workingTime;
+                    $vacation->send_to_accountant = $request->has('send_to_accountant') ? $request->send_to_accountant : 0;
                     $vacation->save();
                 } else {
                     $errors[] = __('Istnieje juz urlop w podanym terminie.');
