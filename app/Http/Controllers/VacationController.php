@@ -182,4 +182,15 @@ class VacationController extends Controller
         return response()->json( compact('vacations', 'countVacationDays'));
     }
 
+    public function sendVacationToAccountant(Request $request)
+    {
+        $vacation = Vacation::find($request->vacationId);
+            
+
+        $vacation->send_to_accountant = 1;
+        $vacation->save();
+        $vacations = Vacation::where('user_id', Auth::user()->id)->orderBy('start_date')->get();
+        return response()->json( compact('vacations'));
+    }
+
 }
